@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Liver Cirrhosis Prediction</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background:  rgba(85, 103, 220, 0.95); no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content:center;
+      align-items: flex-start;
+      padding: 50px;
+      height: 100vh;
+      color: #000000;
+    }
+
+    .container {
+      background: rgba(218, 220, 233, 0.95);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      width: 480px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #1e3c72;
+    }
+
+    .form-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .form-row label {
+      width: 180px;
+      font-weight: bold;
+    }
+
+    .form-row input[type="text"],
+    .form-row select {
+      flex: 1;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    input[type="submit"] {
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-top: 25px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #27ae60;
+    }
+
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .low-risk {
+      color: #2ecc71;
+      background-color: rgba(46, 204, 113, 0.1);
+    }
+
+    .high-risk {
+      color: #e74c3c;
+      background-color: rgba(231, 76, 60, 0.1);
+    }
+  </style>
+
+  <script>
+  function preprocessForm() {
+    try {
+      const ageInput = document.getElementsByName("age")[0];
+      const ageYears = parseFloat(ageInput.value);
+      if (isNaN(ageYears)) {
+        alert("Please enter a valid age.");
+        return false;
+      }
+      ageInput.value = Math.round(ageYears * 365);
+      const sexInput = document.getElementsByName("sex")[0];
+      sexInput.value = (sexInput.value === "Male") ? "1" : "0";
+      ["ascites", "hepatomegaly", "spiders"].forEach(name => {
+        const el = document.getElementsByName(name)[0];
+        el.value = (el.value === "Yes") ? "1" : "0";
+      });
+
+      return true; 
+    } catch (error) {
+      console.error("Form preprocessing failed:", error);
+      alert("There was a problem with the form.");
+      return false;
+    }
+  }
+</script>
+
+
+</head>
+<body>
+  <div class="container">
+    <h2>Liver Cirrhosis Predictor</h2>
+    <form action="/predict" method="post" onsubmit="return preprocessForm();">
+
+
+      <div class="form-row">
+        <label>Age (in years):</label>
+        <input type="text" name="age" required>
+      </div>
+
+      <div class="form-row">
+        <label>Sex:</label>
+        <select name="sex" required>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Ascites:</label>
+        <select name="ascites" required>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Hepatomegaly:</label>
+        <select name="hepatomegaly" required>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Spiders:</label>
+        <select name="spiders" required>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Edema:</label>
+        <select name="edema" required>
+          <option value="N">No</option>
+          <option value="S">Slight</option>
+          <option value="Y">Yes</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Bilirubin:</label>
+        <input type="text" name="bilirubin" required>
+      </div>
+
+      <div class="form-row">
+        <label>Albumin:</label>
+        <input type="text" name="albumin" required>
+      </div>
+
+      <div class="form-row">
+        <label>Alk_Phos:</label>
+        <input type="text" name="alk_phos" required>
+      </div>
+
+      <div class="form-row">
+        <label>SGOT:</label>
+        <input type="text" name="sgot" required>
+      </div>
+
+      <input type="submit" value="Predict">
+    </form>
+
+    {% if prediction_text %}
+      <p style="margin-top: 20px; font-weight: bold; color: {% if 'Low Risk' in prediction_text %}green{% else %}red{% endif %};">
+       Your prediction: {{ prediction_text }}
+       </p>
+    {% endif %}
+
+  </div>
+</body>
+</html>
